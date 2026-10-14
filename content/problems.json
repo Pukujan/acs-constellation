@@ -1,0 +1,190 @@
+{
+  "$schema": "acs-constellation.problems.v1",
+  "note": "Harvested, not authored. Every problem sentence and every evidence entry is taken verbatim from a human-written source at a pinned revision. `revision` is the source repository's HEAD at harvest time (2026-10-13). `hivemind/research` is not a git checkout, so its entries cite the primary arXiv paper as `source` and the survey path as `path`.",
+  "components": [
+    { "id": "oio", "name": "OIO", "full": "Observational Issue Ops", "owns": "Writing issue tickets only — the form, the filer stamp, the triage, and how to handle and prioritize them." },
+    { "id": "acs", "name": "ACS", "full": "Agent Custom Setup", "owns": "Running the tickets — making them workable, breaking them down, and coordinating the agents. The multi-agent hotload pack." },
+    { "id": "pcm", "name": "PCM", "full": "Project Continuity Modules", "owns": "Tasks, checkpoints, push receipts, pull-request gates, and the continuity CLI." },
+    { "id": "cgm", "name": "CGM", "full": "Content Generation Modules", "owns": "Writing routing, prose, naming, visual direction, image generation, and HTML demos." },
+    { "id": "train", "name": "train", "full": "Agent Stack Train", "owns": "The certified version set." }
+  ],
+  "problems": [
+    {
+      "id": "context-lost-between-sessions",
+      "problem": "A project runs for months, but an agent session ends in hours, so the context that made the work make sense is gone before the project is.",
+      "humanConsequence": "The person who returns two weeks later has to reconstruct what the project is before they can do any of the work.",
+      "audience": "human",
+      "answeredBy": ["pcm"],
+      "evidence": [
+        { "label": "Long-running AI-assisted projects accumulate context across many sessions and agents.", "source": "repo:Pukujan/project-continuity-modules", "path": "PROJECT.md", "line": 11, "revision": "73738bbce257c90d7d788f87df8f577142861391" },
+        { "label": "A fresh session should recover purpose, current state, bounded task, evidence, blockers, and exact next action without prior conversation history.", "source": "repo:Pukujan/project-continuity-modules", "path": "PROJECT.md", "line": 7, "revision": "73738bbce257c90d7d788f87df8f577142861391" }
+      ]
+    },
+    {
+      "id": "same-context-rewritten-every-session",
+      "problem": "Relying on a single conversation makes continuity a prompt-writing habit that has to be re-typed, instead of a property of the repository.",
+      "humanConsequence": "The same background is written over and over, and it drifts a little each time until nobody can say which version is true.",
+      "audience": "human",
+      "answeredBy": ["pcm"],
+      "evidence": [
+        { "label": "Turn continuity into a repository invariant rather than a prompt-writing habit.", "source": "repo:Pukujan/project-continuity-modules", "path": "PROJECT.md", "line": 13, "revision": "73738bbce257c90d7d788f87df8f577142861391" }
+      ]
+    },
+    {
+      "id": "unverifiable-claims-about-past-work",
+      "problem": "Relying on a conversation leaves unverifiable claims about what previous agents actually did.",
+      "humanConsequence": "A person cannot tell finished work from work that was only described as finished.",
+      "audience": "ai-development",
+      "answeredBy": ["pcm", "oio"],
+      "evidence": [
+        { "label": "Relying on a single conversation creates context rot, hidden state, poor handoffs, duplicated work, and unverifiable claims about what previous agents did.", "source": "repo:Pukujan/project-continuity-modules", "path": "PROJECT.md", "line": 11, "revision": "73738bbce257c90d7d788f87df8f577142861391" },
+        { "label": "Never label local-only or merely pushed work delivered.", "source": "repo:Pukujan/observational-issue-ops", "path": "PROJECT.md", "line": 18, "revision": "7c9e3d7407c03962208222ffdff330501b24e9ac" }
+      ]
+    },
+    {
+      "id": "observation-with-no-authority",
+      "problem": "An observation arrives with no way to tell who initiated it or whose identity is behind it.",
+      "humanConsequence": "A note from a person and a note an agent wrote about itself look identical, so neither can be trusted or prioritized.",
+      "audience": "ai-development",
+      "answeredBy": ["oio"],
+      "evidence": [
+        { "label": "Every issue carries a required, machine-checkable filer stamp. It answers two questions: who initiated this filing, and whose identity is on it.", "source": "repo:Pukujan/observational-issue-ops", "path": "PROJECT.md", "line": 44, "revision": "7c9e3d7407c03962208222ffdff330501b24e9ac" },
+        { "label": "Human class claims require a separate authenticated GitHub account attestation; body text cannot verify itself.", "source": "repo:Pukujan/observational-issue-ops", "path": "PROJECT.md", "line": 46, "revision": "7c9e3d7407c03962208222ffdff330501b24e9ac" }
+      ]
+    },
+    {
+      "id": "issue-log-duplicated-no-single-definition",
+      "problem": "The issue log was duplicated across repositories, so no single set of definitions existed.",
+      "humanConsequence": "The same record meant different things in different places, and comparing them was guesswork.",
+      "audience": "ai-development",
+      "answeredBy": ["oio"],
+      "evidence": [
+        { "label": "The issue log was duplicated across repositories, leaving no single set of definitions.", "source": "repo:Pukujan/observational-issue-ops", "path": "PROJECT.md", "line": 29, "revision": "7c9e3d7407c03962208222ffdff330501b24e9ac" }
+      ]
+    },
+    {
+      "id": "installer-grading-itself",
+      "problem": "Governance shipped inside the installer, so installing the tool also installed the rules that judged the tool.",
+      "humanConsequence": "The thing being measured chose the measurement, and no one outside it could check the result.",
+      "audience": "ai-development",
+      "answeredBy": ["oio", "acs"],
+      "evidence": [
+        { "label": "OIO exists separately because the issue log used to live inside the installer. When ACS owned both the installer and the coordination rules, installing ACS installed governance — the installer was grading itself.", "source": "repo:Pukujan/observational-issue-ops", "path": "PROJECT.md", "line": 69, "revision": "7c9e3d7407c03962208222ffdff330501b24e9ac" }
+      ]
+    },
+    {
+      "id": "version-pin-copied-across-files",
+      "problem": "A version pin hand-copied into many files drifts, so different files disagree about which versions belong together.",
+      "humanConsequence": "A working setup breaks when one copy moves and the others do not, and the failure shows up far from its cause.",
+      "audience": "ai-development",
+      "answeredBy": ["train"],
+      "evidence": [
+        { "label": "Measured 2026-10-01: one pin lived in thirteen files across three revisions.", "source": "repo:Pukujan/agent-stack-train", "path": "PROJECT.md", "line": 9, "revision": "d345d3ad7b37b06c702d4e16929d6526aabc7334" },
+        { "label": "Measured 2026-10-01: one CGM version pin lived in thirteen files across three revisions.", "source": "repo:Pukujan/observational-issue-ops", "path": "PROJECT.md", "line": 31, "revision": "7c9e3d7407c03962208222ffdff330501b24e9ac" }
+      ]
+    },
+    {
+      "id": "repository-certifies-its-own-siblings",
+      "problem": "The pin lived inside one of the products, so that product certified what was compatible with its own siblings.",
+      "humanConsequence": "Every other project had to trust a peer's file to learn what worked, and the peer had a stake in the answer.",
+      "audience": "ai-development",
+      "answeredBy": ["train"],
+      "evidence": [
+        { "label": "The pin lived inside one of the product repositories, so that repository certified its own siblings and every other repository had to trust a peer's file to learn what 'compatible' meant.", "source": "repo:Pukujan/agent-stack-train", "path": "PROJECT.md", "line": 9, "revision": "d345d3ad7b37b06c702d4e16929d6526aabc7334" },
+        { "label": "No product repository certifies its own siblings.", "source": "repo:Pukujan/agent-stack-train", "path": "PROJECT.md", "line": 38, "revision": "d345d3ad7b37b06c702d4e16929d6526aabc7334" }
+      ]
+    },
+    {
+      "id": "two-agents-duplicate-work",
+      "problem": "Without a shared, versioned install surface, two agents on one repository duplicate work.",
+      "humanConsequence": "Effort is spent twice on the same thing while something else goes untouched, and the person paying for it cannot see it happening.",
+      "audience": "ai-development",
+      "answeredBy": ["acs"],
+      "evidence": [
+        { "label": "Agents are cheap to run and expensive to coordinate. Without a shared, versioned install surface, two agents on one repository duplicate work, act on stale state, or disagree with no tie-breaker.", "source": "repo:Pukujan/agent-custom-setup", "path": "PROJECT.md", "line": 32, "revision": "94819ac8a858833ca4faf50f15f76cf8d0d8c904" }
+      ]
+    },
+    {
+      "id": "agents-disagree-no-tie-breaker",
+      "problem": "Two agents can disagree with no arbiter, so the disagreement is settled by whichever one acts first.",
+      "humanConsequence": "The outcome depends on timing rather than on who was right, and nobody can reconstruct why it went that way.",
+      "audience": "ai-development",
+      "answeredBy": ["acs"],
+      "evidence": [
+        { "label": "Adjudication / tie-breaking between agents is JEV's intended job; JEV is not strong enough for it yet and is parked.", "source": "repo:Pukujan/agent-custom-setup", "path": "PROJECT.md", "line": 52, "revision": "94819ac8a858833ca4faf50f15f76cf8d0d8c904" }
+      ]
+    },
+    {
+      "id": "agents-act-on-stale-state",
+      "problem": "An agent acts on state that was true when it read it and is no longer true when it acts.",
+      "humanConsequence": "Work lands on top of work that already changed, and the correction costs more than the original task.",
+      "audience": "ai-development",
+      "answeredBy": ["acs", "pcm"],
+      "evidence": [
+        { "label": "Without a shared, versioned install surface, two agents on one repository duplicate work, act on stale state, or disagree with no tie-breaker.", "source": "repo:Pukujan/agent-custom-setup", "path": "PROJECT.md", "line": 32, "revision": "94819ac8a858833ca4faf50f15f76cf8d0d8c904" },
+        { "label": "Stale projections yield to their field's authority.", "source": "repo:Pukujan/project-continuity-modules", "path": "PROJECT.md", "line": 12, "revision": "73738bbce257c90d7d788f87df8f577142861391" }
+      ]
+    },
+    {
+      "id": "technical-completeness-no-understanding",
+      "problem": "A repository can have working code, careful tests, and valuable research while its README still leaves a new person reverse-engineering what matters.",
+      "humanConsequence": "The project looks finished from the outside and is unreadable from the inside, so the work does not reach the people it was for.",
+      "audience": "human",
+      "answeredBy": ["cgm"],
+      "evidence": [
+        { "label": "Technical completeness does not automatically create understanding. A repository can have working code, careful tests, and valuable research while its README still leaves a new person reverse-engineering what matters.", "source": "repo:Pukujan/content-generation-modules", "path": "PROJECT.md", "line": 9, "revision": "a51d77cb7bafea150a135a96a111faf0691b2e2f" }
+      ]
+    },
+    {
+      "id": "confident-copy-never-checked",
+      "problem": "An agent sees a folder tree, produces confident copy, adds a generic hero, and moves on before checking whether the result tells a human why the project exists.",
+      "humanConsequence": "The page reads as plausible and says nothing, and the reader leaves without knowing what the project is for.",
+      "audience": "human",
+      "answeredBy": ["cgm"],
+      "evidence": [
+        { "label": "An agent sees a folder tree, produces confident copy, adds a generic hero, and moves on before checking whether the result tells a human why the project exists.", "source": "repo:Pukujan/content-generation-modules", "path": "PROJECT.md", "line": 10, "revision": "a51d77cb7bafea150a135a96a111faf0691b2e2f" },
+        { "label": "When the evidence is missing, the output must say so. A citation proves traceability, not truth.", "source": "repo:Pukujan/content-generation-modules", "path": "PROJECT.md", "line": 17, "revision": "a51d77cb7bafea150a135a96a111faf0691b2e2f" }
+      ]
+    },
+    {
+      "id": "status-stored-nowhere",
+      "problem": "Across about 73 surveyed systems, only a small minority store a truth-status vocabulary on the item itself.",
+      "humanConsequence": "A claim's confidence is decided when it is spoken and forgotten when it is stored, so the reader cannot tell a verified fact from a guess.",
+      "audience": "ai-development",
+      "answeredBy": ["oio", "cgm"],
+      "evidence": [
+        { "label": "Across ~73 systems, only a small minority store a truth-status/label vocabulary on the item itself. The field is evaluated as output behavior everywhere and stored as item state almost nowhere.", "source": "hivemind/research", "path": "SURVEY.md", "line": 187, "revision": "not a git checkout; compiled 2026-10" }
+      ]
+    },
+    {
+      "id": "memory-fails-at-the-write-path",
+      "problem": "Memory fails at the write path, not at retrieval: 69.0% of memory failures are write-time omissions.",
+      "humanConsequence": "The system looks like it remembers and quietly does not, so the person trusts a record that was never complete.",
+      "audience": "ai-development",
+      "answeredBy": ["pcm", "oio"],
+      "evidence": [
+        { "label": "69.0% of memory failures are write-time omissions.", "source": "paper:arXiv:2601.00821", "path": "hivemind/research/ENABLEMENT.md", "line": 100, "revision": "An 2026, arXiv 2601.00821; recorded 2026-10" }
+      ]
+    },
+    {
+      "id": "visibility-is-not-authority",
+      "problem": "An agent can retrieve new evidence and still not treat it as authoritative, so it acts on a superseded fact it can see.",
+      "humanConsequence": "The correct information was available and the wrong action happened anyway.",
+      "audience": "ai-development",
+      "answeredBy": ["pcm"],
+      "evidence": [
+        { "label": "Agents cannot detect implicit memory staleness. Best model reaches 55.2%. Summary finding: 'visibility does not imply authority' — new evidence is retrieved but not treated as authoritative.", "source": "paper:arXiv:2605.06527", "path": "hivemind/research/ENABLEMENT.md", "line": 44, "revision": "STALE, arXiv 2605.06527; recorded 2026-10" }
+      ]
+    },
+    {
+      "id": "memory-amplifies-sycophancy",
+      "problem": "Adding memory can make a model agree with the user more, not less: memory amplifies sycophancy up to 40% over in-context baselines.",
+      "humanConsequence": "The assistant becomes more confident and less useful at exactly the moment the person is relying on it to disagree.",
+      "audience": "ai-development",
+      "answeredBy": ["pcm", "cgm"],
+      "evidence": [
+        { "label": "Memory amplifies sycophancy up to 40% over in-context baselines, across Mem0, MemOS and Zep, in 5 model families. Sonnet 4.6: 1.6% sycophancy with chat history to 40.2% under Mem0. Authors name memory extraction 'the primary culprit' and call it 'a systemic property of the memory layer'.", "source": "paper:arXiv:2606.10949", "path": "hivemind/research/ENABLEMENT.md", "line": 40, "revision": "arXiv 2606.10949; recorded 2026-10" }
+      ]
+    }
+  ]
+}

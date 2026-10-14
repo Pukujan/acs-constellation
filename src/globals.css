@@ -1,0 +1,586 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------
+   The Mona ramp. Five colors, and nothing on the site adds a hue to
+   them:
+     Biscay  #1D2B5D  deep base
+     East Bay #3C3D86 mid indigo
+     Studio   #7A3EB2 the single vivid accent
+     Twine    #C8A06A warm gold, used sparingly
+     Whisper  #F2F3F8 near-white
+   Every other token below is one of those five at a different step of
+   lightness, so a layer can be told apart without a new hue.
+------------------------------------------------------------------ */
+@layer base {
+  :root {
+    --biscay: 227 53% 24%;
+    --east-bay: 239 38% 38%;
+    --studio: 271 48% 47%;
+    --twine: 34 46% 60%;
+    --whisper: 230 30% 96%;
+
+    /* Biscay and East Bay, pushed down for the field and up for text. Each is
+       one of the five hues at a different lightness, never a sixth hue. */
+    --biscay-deep: 227 58% 7%;
+    --biscay-void: 227 62% 3%;
+    --biscay-night: 227 60% 5%;
+    --biscay-mid: 227 56% 9%;
+    --biscay-ink: 227 55% 10%;
+    --biscay-panel: 227 50% 14%;
+    --biscay-line: 227 40% 30%;
+    --biscay-step: 227 60% 62%;
+    --east-bay-step: 239 48% 66%;
+    --studio-step: 271 55% 62%;
+    --studio-wash: 271 45% 80%;
+    --twine-step: 34 50% 72%;
+    --whisper-step: 230 25% 88%;
+
+    --background: var(--biscay-deep);
+    --foreground: var(--whisper);
+
+    --card: var(--biscay-panel);
+    --card-foreground: var(--whisper);
+
+    --popover: 227 55% 10%;
+    --popover-foreground: var(--whisper);
+
+    /* Studio is the one vivid accent: primary action, active state. */
+    --primary: var(--studio-step);
+    --primary-foreground: var(--whisper);
+
+    --secondary: var(--biscay-panel);
+    --secondary-foreground: var(--whisper);
+
+    --muted: 227 48% 17%;
+    --muted-foreground: 227 30% 72%;
+
+    --accent: var(--biscay-panel);
+    --accent-foreground: var(--twine-step);
+
+    --destructive: var(--twine);
+    --destructive-foreground: var(--biscay-deep);
+
+    --border: var(--biscay-line);
+    --input: var(--biscay-line);
+    --ring: var(--studio-step);
+
+    --radius: 0.75rem;
+
+    /* Twine carries the eyebrow and the single highlight. */
+    --gold: var(--twine);
+    --gold-soft: var(--twine-step);
+
+    /* Layers are steps of the Mona ramp, not five hues. Each value below is
+       the exact HSL of the matching hex in LAYER_HEX (src/lib/content.ts), so
+       the DOM and the WebGL scene never drift apart. */
+    --layer-oio: 34 46% 60%; /* Twine  #C8A06A */
+    --layer-acs: 271 55% 62%; /* Studio lifted  #A069D3 */
+    --layer-pcm: 271 45% 80%; /* Studio washed  #CDB5E3 */
+    --layer-cgm: 239 48% 66%; /* East Bay lifted  #7F80D2 */
+    --layer-train: 230 30% 96%; /* Whisper  #F2F3F8 */
+
+    --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+    --font-body: "Public Sans", "Helvetica Neue", Arial, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+
+    /* Written on <html> by the scroll loop. 0 until then, and never written
+       under prefers-reduced-motion, so every parallax calc below resolves to
+       no movement. */
+    --sy: 0;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    line-height: 1.12;
+    text-wrap: balance;
+  }
+
+  ::selection {
+    background: hsl(var(--studio) / 0.42);
+  }
+
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 3px;
+  }
+}
+
+@layer components {
+  /* The field below everything. Biscay only: no photo plate, no warm
+     wash, and the two faint star dots are Whisper and Twine. */
+  .sky-plate {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    /* A painted field only. It must never sit between a tap and the sky. */
+    pointer-events: none;
+    background:
+      radial-gradient(
+        110% 70% at 62% 8%,
+        hsl(var(--biscay) / 0.55) 0%,
+        hsl(var(--biscay-mid)) 46%,
+        hsl(var(--biscay-night)) 100%
+      );
+  }
+
+  .sky-plate::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 20% 30%, hsl(var(--whisper) / 0.75) 50%, transparent 51%),
+      radial-gradient(1px 1px at 70% 12%, hsl(var(--whisper) / 0.6) 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 42% 68%, hsl(var(--twine) / 0.55) 50%, transparent 51%),
+      radial-gradient(1px 1px at 88% 52%, hsl(var(--whisper) / 0.5) 50%, transparent 51%),
+      radial-gradient(1px 1px at 8% 82%, hsl(var(--whisper) / 0.45) 50%, transparent 51%);
+    opacity: 0.45;
+  }
+
+  /*
+   * Three star layers over that field, each scrolling at its own rate, so the
+   * page reads as depth instead of as length. Points are Whisper and Twine
+   * only. --sy is 0 under prefers-reduced-motion, which freezes all three.
+   */
+  .sky-layer {
+    position: absolute;
+    inset: -25% -10%;
+    background-repeat: repeat;
+    will-change: transform;
+  }
+
+  .sky-far {
+    background-image:
+      radial-gradient(1px 1px at 12% 18%, hsl(var(--whisper) / 0.55) 50%, transparent 51%),
+      radial-gradient(1px 1px at 47% 6%, hsl(var(--whisper) / 0.4) 50%, transparent 51%),
+      radial-gradient(1px 1px at 78% 34%, hsl(var(--whisper) / 0.5) 50%, transparent 51%),
+      radial-gradient(1px 1px at 26% 62%, hsl(var(--whisper) / 0.35) 50%, transparent 51%),
+      radial-gradient(1px 1px at 64% 82%, hsl(var(--whisper) / 0.45) 50%, transparent 51%);
+    background-size: 340px 340px;
+    transform: translate3d(0, calc(var(--sy) * -0.045px), 0);
+  }
+
+  .sky-mid {
+    background-image:
+      radial-gradient(1.4px 1.4px at 8% 44%, hsl(var(--whisper) / 0.7) 50%, transparent 51%),
+      radial-gradient(1.4px 1.4px at 52% 22%, hsl(var(--twine) / 0.6) 50%, transparent 51%),
+      radial-gradient(1.4px 1.4px at 84% 58%, hsl(var(--whisper) / 0.6) 50%, transparent 51%),
+      radial-gradient(1.4px 1.4px at 34% 88%, hsl(var(--whisper) / 0.5) 50%, transparent 51%);
+    background-size: 520px 520px;
+    transform: translate3d(0, calc(var(--sy) * -0.11px), 0);
+  }
+
+  .sky-near {
+    background-image:
+      radial-gradient(2px 2px at 18% 12%, hsl(var(--twine) / 0.7) 50%, transparent 51%),
+      radial-gradient(2px 2px at 70% 40%, hsl(var(--whisper) / 0.8) 50%, transparent 51%),
+      radial-gradient(1.8px 1.8px at 40% 70%, hsl(var(--whisper) / 0.55) 50%, transparent 51%);
+    background-size: 760px 760px;
+    transform: translate3d(0, calc(var(--sy) * -0.2px), 0);
+  }
+
+  .plate {
+    background: linear-gradient(
+      160deg,
+      hsl(var(--biscay-panel) / 0.9),
+      hsl(var(--biscay-ink) / 0.92)
+    );
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    box-shadow:
+      inset 0 1px 0 hsl(var(--whisper) / 0.05),
+      0 18px 40px -28px hsl(var(--biscay-void) / 0.9);
+  }
+
+  .rule {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(var(--studio) / 0.5),
+      transparent
+    );
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: hsl(var(--twine));
+  }
+
+  .lede {
+    font-size: 1.0625rem;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .prose-body p + p {
+    margin-top: 1rem;
+  }
+
+  .cite {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+  }
+
+  .layer-oio { color: hsl(var(--layer-oio)); }
+  .layer-acs { color: hsl(var(--layer-acs)); }
+  .layer-pcm { color: hsl(var(--layer-pcm)); }
+  .layer-cgm { color: hsl(var(--layer-cgm)); }
+  .layer-train { color: hsl(var(--layer-train)); }
+
+  .bg-layer-oio { background-color: hsl(var(--layer-oio)); }
+  .bg-layer-acs { background-color: hsl(var(--layer-acs)); }
+  .bg-layer-pcm { background-color: hsl(var(--layer-pcm)); }
+  .bg-layer-cgm { background-color: hsl(var(--layer-cgm)); }
+  .bg-layer-train { background-color: hsl(var(--layer-train)); }
+
+  .link-quiet {
+    color: hsl(var(--east-bay-step));
+    text-decoration: underline;
+    text-underline-offset: 0.22em;
+    text-decoration-color: hsl(var(--east-bay) / 0.7);
+  }
+
+  .link-quiet:hover {
+    color: hsl(var(--whisper));
+    text-decoration-color: hsl(var(--studio));
+  }
+
+  /* The hero sky is the hero. No panel, no border, no rounded card. */
+  .canvas-shell {
+    position: relative;
+    /*
+     * The middle of the canvas drives the sky; its edges belong to the page.
+     * pan-y is the resting state, so a swipe that starts near an edge always
+     * scrolls. The scene raises this to none for gestures inside the centre.
+     */
+    touch-action: pan-y;
+    overflow: hidden;
+    background: transparent;
+  }
+
+  /*
+   * The hero is the sky. The canvas fills the section edge to edge and sits
+   * behind the header; the words sit on top of it over .hero-scrim. No panel,
+   * no border, no rounded card around any part of it.
+   */
+  .hero-shell {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+    isolation: isolate;
+  }
+
+  .hero-canvas {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  /* Words sit on the sky. The scrim is heaviest where the text is and
+     clears before it reaches the hotloader. */
+  .hero-scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      hsl(var(--background) / 0.86) 0%,
+      hsl(var(--background) / 0.4) 42%,
+      transparent 68%
+    );
+  }
+
+  @media (min-width: 640px) {
+    .hero-scrim {
+      background: linear-gradient(
+        to right,
+        hsl(var(--background) / 0.92) 0%,
+        hsl(var(--background) / 0.7) 28%,
+        hsl(var(--background) / 0.15) 52%,
+        transparent 68%
+      );
+    }
+  }
+
+  .node-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: hsl(var(--whisper) / 0.72);
+    text-shadow: 0 0 12px hsl(var(--biscay-void) / 0.95);
+    /*
+     * The scene writes translate(-50%,-50%) translate(x,y) into this property
+     * every frame. Anchoring with inset instead of a hard-coded -50% keeps the
+     * core label's own offset from being wiped out by that write.
+     */
+    will-change: transform;
+  }
+
+  /* Cluster names are long; let them wrap inside the canvas instead of clipping. */
+  .node-label[data-kind="anchor"] {
+    max-width: 7rem;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.25;
+    color: hsl(var(--twine-step) / 0.85);
+  }
+
+  .node-label[data-kind="core"] {
+    max-width: 11rem;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.3;
+    color: hsl(var(--whisper));
+    font-size: 0.625rem;
+    letter-spacing: 0.16em;
+    /* The core sits at the scene origin; its label hangs below the hole. */
+    transform: translate(-50%, 0);
+  }
+
+  .node-label[data-selected="true"] {
+    font-size: 0.6875rem;
+    color: hsl(var(--whisper));
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .rise {
+    animation: rise 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+
+  /* ---------------------------------------------------------- navigation */
+
+  /* The menu bar that replaces the single long scroll. */
+  .section-tabs {
+    display: flex;
+    gap: 0.25rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    border: 1px solid hsl(var(--biscay-line));
+    border-radius: 999px;
+    background: hsl(var(--biscay-deep) / 0.72);
+    backdrop-filter: blur(10px);
+    padding: 0.25rem;
+  }
+
+  .section-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .section-tab {
+    flex: none;
+    border-radius: 999px;
+    padding: 0.5rem 0.95rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: hsl(var(--muted-foreground));
+    transition: color 0.2s ease, background-color 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .section-tab:hover {
+    color: hsl(var(--whisper));
+  }
+
+  .section-tab[aria-selected="true"] {
+    background: hsl(var(--studio));
+    color: hsl(var(--whisper));
+  }
+
+  /* The stack diagram: layer names on the left, the sky on the right. */
+  .layer-pill {
+    display: flex;
+    width: 100%;
+    align-items: baseline;
+    gap: 0.6rem;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    padding: 0.55rem 0.9rem;
+    text-align: left;
+    color: hsl(var(--muted-foreground));
+    transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .layer-pill:hover {
+    color: hsl(var(--whisper));
+    border-color: hsl(var(--biscay-line));
+  }
+
+  .layer-pill[aria-pressed="true"] {
+    background: hsl(var(--biscay-panel) / 0.9);
+    border-color: hsl(var(--studio));
+    color: hsl(var(--whisper));
+  }
+
+  /*
+   * Photographs and illustrations are pulled into Mona with a duotone, so no
+   * image brings a sixth hue onto the site. The image keeps its luminance; the
+   * ramp supplies the color.
+   */
+  .duotone {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: hsl(var(--biscay-deep));
+  }
+
+  .duotone img {
+    mix-blend-mode: luminosity;
+    filter: saturate(0.18) contrast(1.05) brightness(0.85);
+    opacity: 0.92;
+  }
+
+  .duotone::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      155deg,
+      hsl(var(--studio) / 0.55),
+      hsl(var(--biscay) / 0.8) 52%,
+      hsl(var(--biscay-deep) / 0.92)
+    );
+    mix-blend-mode: color;
+    pointer-events: none;
+  }
+
+  /* A decorative star band that scrolls at its own rate behind a panel. */
+  .parallax-band {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(1.2px 1.2px at 14% 22%, hsl(var(--whisper) / 0.4) 50%, transparent 51%),
+      radial-gradient(1.2px 1.2px at 62% 12%, hsl(var(--twine) / 0.35) 50%, transparent 51%),
+      radial-gradient(1.2px 1.2px at 84% 66%, hsl(var(--whisper) / 0.3) 50%, transparent 51%),
+      radial-gradient(1.2px 1.2px at 34% 78%, hsl(var(--whisper) / 0.25) 50%, transparent 51%);
+    background-size: 420px 420px;
+    transform: translate3d(0, calc(var(--sy) * -0.06px), 0);
+  }
+
+  /* The one vivid action on the page: Studio, with a Twine-free ring. */
+  .btn-hot {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 999px;
+    background: hsl(var(--studio));
+    padding: 0.7rem 1.4rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: hsl(var(--whisper));
+    box-shadow:
+      0 0 0 1px hsl(var(--studio-wash) / 0.45),
+      0 14px 34px -18px hsl(var(--studio) / 0.9);
+    transition: transform 0.18s ease, background-color 0.18s ease;
+  }
+
+  .btn-hot:hover {
+    background: hsl(var(--studio-step));
+    transform: translateY(-2px);
+  }
+
+  /* A lifted panel's shadow: Biscay, never a neutral black. */
+  .shadow-plate {
+    box-shadow: 0 30px 60px -40px hsl(var(--biscay-void));
+  }
+
+  /* The two dated events on the timeline, marked in Twine. */
+  .timeline-dot {
+    background: hsl(var(--twine));
+    box-shadow: 0 0 12px hsl(var(--twine) / 0.8);
+  }
+
+  /* One number, one label, one citation. */
+  .big-number {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 11vw, 5.5rem);
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    color: hsl(var(--whisper));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rise,
+    html {
+      animation: none;
+      scroll-behavior: auto;
+    }
+
+    /*
+     * Parallax freezes. useScrollDepth stops writing --sy, so these resolve to
+     * no movement even before this rule; the rule keeps it that way if a stale
+     * --sy is left on the element.
+     */
+    .sky-far,
+    .sky-mid,
+    .sky-near,
+    .parallax-band,
+    [data-parallax] {
+      transform: none !important;
+    }
+  }
+}

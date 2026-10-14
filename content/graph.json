@@ -1,0 +1,25 @@
+{
+  "$schema": "acs-constellation.graph.v1",
+  "note": "Edges from each repository's own PROJECT.md layer table — pins, consumes, points-at. No invented relationships. The layer table appears identically in observational-issue-ops PROJECT.md:71, agent-custom-setup PROJECT.md:67, and project-continuity-modules PROJECT.md:72.",
+  "layers": [
+    { "layer": "Ticket logging", "component": "oio" },
+    { "layer": "Execution coordination", "component": "acs" },
+    { "layer": "Continuity", "component": "pcm" },
+    { "layer": "Narrative", "component": "cgm" },
+    { "layer": "Versions", "component": "train" }
+  ],
+  "edges": [
+    { "from": "acs", "to": "oio", "kind": "runs-tickets", "note": "ACS runs the tickets OIO's form files. ACS PROJECT.md: 'ACS *runs* tickets; it does not file them.'" },
+    { "from": "acs", "to": "pcm", "kind": "pins", "note": "ACS PROJECT.md: 'ACS pins PCM and CGM as external authorities and vendors neither.'" },
+    { "from": "acs", "to": "cgm", "kind": "pins", "note": "Same sentence." },
+    { "from": "oio", "to": "train", "kind": "pins", "note": "OIO PROJECT.md: 'OIO's own pins point at it and preserve its proposed status.'" },
+    { "from": "oio", "to": "cgm", "kind": "routes-prose", "note": "OIO PROJECT.md: 'README, issue, PR, and commit prose route through CGM.'" },
+    { "from": "pcm", "to": "train", "kind": "reads-versions", "note": "Train PROJECT.md: 'pin once, read the version from the train, never hand-copy.'" },
+    { "from": "cgm", "to": "train", "kind": "pins", "note": "CGM PROJECT.md: 'CGM appears there as the narrative and styling authority.'" },
+    { "from": "oio", "to": "acs", "kind": "separate-from", "note": "OIO PROJECT.md: 'OIO takes the governance out and gives it its own repository.'" }
+  ],
+  "evidenceTable": {
+    "note": "The shared layer table, harvestable from three repos. Each entry links to one.",
+    "row": { "source": "repo:Pukujan/observational-issue-ops", "path": "PROJECT.md", "line": 71, "revision": "7c9e3d7407c03962208222ffdff330501b24e9ac" }
+  }
+}

@@ -1,0 +1,14 @@
+# Put acs-web on the docker network the study-os Cloudflare tunnel already uses,
+# so the tunnel reaches it by container name. The network is external: it is
+# owned by the study-os compose project and must not be created or removed here.
+services:
+  web:
+    networks:
+      edge:
+        aliases:
+          - acs-web
+
+networks:
+  edge:
+    external: true
+    name: ${EDGE_NETWORK:-study-os_edge}

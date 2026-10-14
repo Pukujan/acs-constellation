@@ -1,0 +1,233 @@
+{
+  "$schema": "acs-constellation.research.v1",
+  "note": "Figures transcribed from content/sources.md. Every row carries the epistemic tag and the source sentence it came from. Nothing here is measured on ACS itself.",
+  "survey": {
+    "systems": 116,
+    "clusters": 12,
+    "citedSources": 500,
+    "path": "hivemind/research/SURVEY.md",
+    "tag": "MEASURED",
+    "status": "A research corpus, not a product."
+  },
+  "components": [
+    {
+      "id": "pcm",
+      "figures": [
+        {
+          "key": "writeOmissions",
+          "value": 69.0,
+          "unit": "%",
+          "tag": "MEASURED",
+          "source": "arXiv:2601.00821",
+          "arxiv": "2601.00821",
+          "quote": "69.0% of memory failures are write-time omissions."
+        },
+        {
+          "key": "extractionLoss",
+          "tag": "MEASURED",
+          "source": "arXiv:2601.00821",
+          "arxiv": "2601.00821",
+          "quote": "Extraction loses 15.9 points on LoCoMo and 22.0 points on LongMemEval-S versus verbatim storage.",
+          "rows": [
+            { "label": "LoCoMo", "value": 15.9 },
+            { "label": "LongMemEval-S", "value": 22.0 }
+          ]
+        }
+      ],
+      "chart": {
+        "id": "updateAccuracy",
+        "kind": "bars",
+        "tag": "MEASURED",
+        "source": "HaluMem, arXiv:2511.03506",
+        "arxiv": "2511.03506",
+        "unit": "%",
+        "referenceLine": 50,
+        "quote": "Memory update accuracy is below 50% in every system tested: Mem0 25.5%, Mem0-Graph 24.5%, Memobase 5.2%, Supermemory 16.4%, Zep 47.3%; omission rates 52-94%.",
+        "rows": [
+          { "label": "Zep", "value": 47.3 },
+          { "label": "Mem0", "value": 25.5 },
+          { "label": "Mem0-Graph", "value": 24.5 },
+          { "label": "Supermemory", "value": 16.4 },
+          { "label": "Memobase", "value": 5.2 }
+        ]
+      }
+    },
+    {
+      "id": "oio",
+      "figures": [
+        {
+          "key": "denominator",
+          "value": 73,
+          "unit": "systems",
+          "tag": "MEASURED",
+          "source": "hivemind/research/SURVEY.md",
+          "quote": "Across about 73 systems, only a small minority store a truth-status/label vocabulary on the item itself."
+        }
+      ],
+      "chart": {
+        "id": "statusExceptions",
+        "kind": "bars",
+        "tag": "DERIVED",
+        "source": "hivemind/research/SURVEY.md",
+        "unit": "systems",
+        "limit": "The count is the list of exceptions the survey names, not a census of every system that stores a status.",
+        "groups": [
+          {
+            "label": "PKM / markdown",
+            "value": 5,
+            "members": [
+              "OKF v0.2 (status: draft|stable|deprecated)",
+              "swarmvault (extracted|inferred|ambiguous)",
+              "obsidian-mind (verified|inferred|unverified)",
+              "Epistract (7 certainty labels)",
+              "agentcairn (valid_from / valid_until / superseded_by)"
+            ]
+          },
+          {
+            "label": "Hosted / OSS products",
+            "value": 3,
+            "members": [
+              "Supermemory (isInference / isLatest / isForgotten / isStatic)",
+              "Hindsight (fact_type, state: valid|invalidated)",
+              "Mem0 Platform (synthesized, replaced_by)"
+            ]
+          },
+          {
+            "label": "Foundations",
+            "value": 5,
+            "members": [
+              "Wikidata ranks",
+              "RDF 1.2 reifiers",
+              "TMS IN/OUT",
+              "Self-RAG (IsSup)",
+              "CRAG (Correct|Incorrect|Ambiguous)"
+            ]
+          }
+        ],
+        "noStatus": [
+          "Mem0 OSS", "Letta", "Cognee", "Mem0 (shipped)", "MemGPT", "A-MEM",
+          "MemoryBank", "HippoRAG", "Obsidian", "Logseq", "Tana", "ChatGPT",
+          "Claude", "Cursor", "NotebookLM", "Basic Memory", "Khoj",
+          "MCP reference server"
+        ]
+      }
+    },
+    {
+      "id": "acs",
+      "figures": [
+        {
+          "key": "visibility",
+          "value": 55.2,
+          "unit": "%",
+          "tag": "MEASURED",
+          "source": "STALE, arXiv:2605.06527",
+          "arxiv": "2605.06527",
+          "quote": "Agents cannot detect implicit memory staleness. Best model reaches 55.2%. Summary finding: visibility does not imply authority."
+        }
+      ],
+      "chart": {
+        "id": "longHistory",
+        "kind": "bars",
+        "tag": "MEASURED",
+        "source": "HaluMem, arXiv:2511.03506",
+        "arxiv": "2511.03506",
+        "unit": "%",
+        "limit": "Bars mark the top of each reported range. Correct updates fell to between 1.5% and 37%; omission rose to between 62% and 98%.",
+        "quote": "At 1M-token histories, correct updates collapse to 1.5-37%, and omission rises to 62-98%.",
+        "rows": [
+          { "label": "Correct updates", "value": 37, "range": "1.5 to 37" },
+          { "label": "Write-time omissions", "value": 98, "range": "62 to 98" }
+        ]
+      },
+      "regimes": [
+        {
+          "name": "Overwrite",
+          "detail": "last-write-wins",
+          "systems": ["Letta / MemGPT blocks", "A-MEM", "MCP reference server", "ChatGPT, Claude, Cursor as manual-edit overwrite"]
+        },
+        {
+          "name": "Invalidate, do not delete",
+          "detail": "the old fact stays and is marked",
+          "systems": ["Zep / Graphiti (invalid_at)", "Hindsight (state: invalidated)", "Supermemory (isLatest, version, soft-delete)"]
+        },
+        {
+          "name": "Add only",
+          "detail": "no reconciliation",
+          "systems": ["Mem0 v3, where the migration removed UPDATE and DELETE from the OSS write path and cut about 4,000 lines"]
+        },
+        {
+          "name": "Manual",
+          "detail": "the user edits or deletes",
+          "systems": ["ChatGPT", "Claude", "Cursor", "Mem0 Platform"]
+        }
+      ],
+      "regimeSource": "hivemind/research/SURVEY.md section 2.2, citing docs.mem0.ai/migration/oss-v2-to-v3",
+      "regimeTag": "MEASURED"
+    },
+    {
+      "id": "cgm",
+      "chart": {
+        "id": "sycophancy",
+        "kind": "bars",
+        "tag": "MEASURED",
+        "source": "arXiv:2606.10949",
+        "arxiv": "2606.10949",
+        "unit": "%",
+        "quote": "Memory amplifies sycophancy up to 40% over in-context baselines, across Mem0, MemOS and Zep, in 5 model families. Sonnet 4.6: 1.6% sycophancy with chat history to 40.2% under Mem0.",
+        "rows": [
+          { "label": "Chat history", "value": 1.6 },
+          { "label": "Mem0 memory", "value": 40.2 }
+        ]
+      }
+    },
+    {
+      "id": "train",
+      "figures": [
+        {
+          "key": "pinFiles",
+          "value": 13,
+          "unit": "files",
+          "tag": "MEASURED",
+          "measuredOn": "2026-10-01",
+          "source": "repo:Pukujan/agent-stack-train",
+          "quote": "Measured 2026-10-01: one pin lived in thirteen files across three revisions."
+        },
+        {
+          "key": "pinRevisions",
+          "value": 3,
+          "unit": "revisions",
+          "tag": "MEASURED",
+          "measuredOn": "2026-10-01",
+          "source": "repo:Pukujan/observational-issue-ops",
+          "quote": "Measured 2026-10-01: one CGM version pin lived in thirteen files across three revisions."
+        }
+      ],
+      "gapTable": {
+        "tag": "DERIVED",
+        "source": "hivemind/research/SURVEY.md",
+        "rows": [
+          {
+            "requirement": "First-class epistemic state",
+            "priorArt": "OKF v0.2, Supermemory, Hindsight, TMS IN/OUT",
+            "gap": "A single status enum that is a first-class stored field, is read by retrieval, and covers the full set. Every prior-art enum is partial, uses different labels, and is often written but never read."
+          },
+          {
+            "requirement": "Decisions first-class, never reified into facts",
+            "priorArt": "rand/mnemosyne Decision type, OKF decision, ADR/MADR",
+            "gap": "Any shipped agent-memory system where decisions are a distinct type that survives revocation with its rationale. The memory products collapse decisions into facts."
+          },
+          {
+            "requirement": "Lineage / provenance, PROV-O-style",
+            "priorArt": "PROV-O, PAM parent_ids, Supermemory DERIVES",
+            "gap": "A system that uses lineage for maintenance, not just audit."
+          },
+          {
+            "requirement": "Supersession propagates to derived items",
+            "priorArt": "TMS, probabilistic-DB lineage, event sourcing",
+            "gap": "Any shipped system. This is the universal gap."
+          }
+        ]
+      }
+    }
+  ]
+}

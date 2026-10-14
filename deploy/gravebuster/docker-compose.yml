@@ -1,0 +1,29 @@
+# The ACS constellation site on the Mac.
+#
+# Container name is load-bearing: the Cloudflare tunnel ingress routes
+# acs.design-bakery.com -> http://acs-web:80, so the container must be named
+# acs-web and listen on 80. docker-compose.edge.yml puts it on the network the
+# tunnel is attached to.
+#
+#   cd ~/apps/acs-constellation
+#   docker compose -f deploy/gravebuster/docker-compose.yml \
+#                  -f deploy/gravebuster/docker-compose.edge.yml up -d --build
+name: acs-web
+
+services:
+  web:
+    container_name: acs-web
+    image: ${ACS_WEB_IMAGE:-acs-web:local}
+    build:
+      context: ../..
+      dockerfile: deploy/gravebuster/Dockerfile
+    restart: unless-stopped
+    ports:
+      # Loopback only. The public path is the tunnel, which reaches the
+      # container over the docker network by name.
+      - "127.0.0.1:${WEB_HOST_PORT:-8097}:80"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

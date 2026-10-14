@@ -1,0 +1,16 @@
+# The ACS constellation site. Static SPA: the Vite build writes the whole app to
+# /srv, and Caddy serves it with an SPA fallback so /prd and /map resolve on a
+# hard refresh. /healthz is the probe the tunnel and the compose healthcheck use.
+:80 {
+	encode gzip
+	root * /srv
+
+	handle /healthz {
+		respond "ok" 200
+	}
+
+	handle {
+		try_files {path} /index.html
+		file_server
+	}
+}
