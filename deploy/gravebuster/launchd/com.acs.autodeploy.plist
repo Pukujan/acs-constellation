@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+	Auto-deploy poller for the ACS constellation site on the Mac.
+
+	macOS has no systemd, so this is the launchd counterpart of a systemd timer:
+	every StartInterval seconds it runs autodeploy.sh, which deploys when
+	origin/main has moved. Modeled on the box's existing
+	com.designbakery.autodeploy agent (same StartInterval, log location, PATH).
+
+	launchd does NOT expand ~ or $HOME, so the paths below are absolute. If the
+	Mac user is not teresaguajardo, substitute the real name before installing.
+
+	Install:
+		cp deploy/gravebuster/launchd/com.acs.autodeploy.plist ~/Library/LaunchAgents/
+		launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.acs.autodeploy.plist
+		launchctl kickstart -k gui/$(id -u)/com.acs.autodeploy   # run once now
+
+	All deploy safety lives in autodeploy.sh -> deploy.sh (lock, smoke, rollback).
+	Deploys pause while the lid is closed and catch up on wake.
+-->
+<plist version="1.0">
+<dict>
+	<key>Label</key><string>com.acs.autodeploy</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/teresaguajardo/apps/acs-constellation/deploy/gravebuster/autodeploy.sh</string>
+	</array>
+	<key>WorkingDirectory</key><string>/Users/teresaguajardo/apps/acs-constellation</string>
+	<key>EnvironmentVariables</key>
+	<dict><key>PATH</key><string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string></dict>
+	<key>StartInterval</key><integer>300</integer>
+	<key>RunAtLoad</key><true/>
+	<key>StandardOutPath</key><string>/Users/teresaguajardo/Library/Logs/acs-autodeploy.log</string>
+	<key>StandardErrorPath</key><string>/Users/teresaguajardo/Library/Logs/acs-autodeploy.log</string>
+</dict>
+</plist>

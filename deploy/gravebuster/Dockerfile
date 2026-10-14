@@ -25,8 +25,10 @@ RUN npm install -g pnpm@${PNPM_VERSION}
 WORKDIR /app
 
 # Manifests first so the dependency layer survives source edits.
-COPY package.json pnpm-lock.yaml* ./
-RUN pnpm install --no-frozen-lockfile
+# pnpm-workspace.yaml carries onlyBuiltDependencies (esbuild, @swc/core); without
+# it pnpm 10 refuses the dependencies' build scripts.
+COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml* ./
+RUN pnpm install --frozen-lockfile
 
 COPY . .
 RUN pnpm build
