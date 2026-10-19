@@ -42,3 +42,4 @@ deploy/gravebuster/.deploy-state
 deploy/gravebuster/.deploy.lock
 deploy/gravebuster/*.log
 .gate-report.jsonl
+.dyad/
