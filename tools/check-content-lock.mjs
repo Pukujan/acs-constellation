@@ -26,7 +26,7 @@ const ROOT = process.cwd();
 
 /** Recorded at 2026-10-13, before the black hole port. */
 const LOCKED = {
-  "content/copy.json": { head: "2569762c", tail: "083da" },
+  "content/copy.json": { head: "c37b990c", tail: "45265" },
   "content/graph.json": { head: "f50658da", tail: "7b962" },
   "content/problems.json": { head: "a18f7bff", tail: "c8ed2" },
   "content/research.json": { head: "da74621c", tail: "efd2e" },

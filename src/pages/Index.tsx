@@ -25,7 +25,7 @@ const DEMO_STEPS = ["demo.step1", "demo.step2", "demo.step3"];
 
 function useTitle() {
   useEffect(() => {
-    document.title = `${t("nav.brand")} — ${t("nav.brandExpanded")}`;
+    document.title = `${t("nav.brand")}: ${t("nav.brandExpanded")}`;
   }, []);
 }
 

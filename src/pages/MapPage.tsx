@@ -48,7 +48,7 @@ export default function MapPage() {
   const setMode = (next: Mode) => setParams({ view: next }, { replace: true });
 
   useEffect(() => {
-    document.title = `${t("map.title")} — ${t("nav.brand")}`;
+    document.title = `${t("map.title")}: ${t("nav.brand")}`;
   }, []);
 
   return (

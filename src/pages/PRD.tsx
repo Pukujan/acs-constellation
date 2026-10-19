@@ -33,7 +33,7 @@ const DETAILS = [
 
 export default function PRD() {
   useEffect(() => {
-    document.title = `${t("prd.title")} — ${t("nav.brand")}`;
+    document.title = `${t("prd.title")}: ${t("nav.brand")}`;
   }, []);
 
   const revisions = new Map<string, string>();
