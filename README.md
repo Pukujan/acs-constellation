@@ -43,8 +43,8 @@ their strings through it.
 |---|---|
 | `check-copy` | No prose-shaped literals in `src/`; every copy slot a component asks for exists; no banned words |
 | `check-content-lock` | Each content bundle's digest matches its recorded value, so harvested evidence cannot drift silently |
-| `check-tap-targets` | Minimum touch target sizes |
-| `check-sky-behaviour` | The constellation scene's interaction contract |
+| `check-tap-targets` | Projects the real hero layout through the real camera at a 390×844 viewport, all the way round the sky's turn, and fails when a star stops being tappable |
+| `check-sky-behaviour` | The sky's motion contract: no two stars move together, a picked star faces the reader, the canvas edge belongs to the page, the hotloader pulses no harder than the painted one it replaced |
 
 Each gate appends to `.gate-report.jsonl`, which CI uploads as an artifact.
 
