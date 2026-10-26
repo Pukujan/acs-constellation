@@ -17,6 +17,10 @@ services:
     build:
       context: ../..
       dockerfile: deploy/gravebuster/Dockerfile
+      args:
+        # Stamped into the image so the deploy can prove it built the commit it
+        # resolved, not a stale working tree.
+        ACS_BUILD_SHA: ${ACS_BUILD_SHA:-unknown}
     restart: unless-stopped
     ports:
       # Loopback only. The public path is the tunnel, which reaches the

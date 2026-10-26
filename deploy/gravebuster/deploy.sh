@@ -275,6 +275,23 @@ smoke() {
 		failures=$((failures + 1))
 	fi
 
+	# A stale checkout builds and serves perfectly — it is just the wrong code. The
+	# build stamp is the only assertion that catches a deploy shipping the wrong
+	# tree. Checked only for the image this run built: a rollback deliberately runs
+	# an older one.
+	local running
+	running=$(running_image)
+	if [ -n "${NEW_IMAGE:-}" ] && [ "$running" = "$NEW_IMAGE" ]; then
+		local built
+		built=$(docker inspect -f '{{index .Config.Labels "acs.build.sha"}}' "$CONTAINER" 2>/dev/null || true)
+		if [ "$built" = "$SHA" ]; then
+			log "  ok   image built from $SHORT"
+		else
+			log "  FAIL image built from ${built:-<no label>}, expected $SHORT"
+			failures=$((failures + 1))
+		fi
+	fi
+
 	assert_edge_network || failures=$((failures + 1))
 
 	# Public reachability is reported, never fatal: a Cloudflare-side blip must not
@@ -332,22 +349,28 @@ NEW_IMAGE="$IMAGE_REPO:$SHORT-$(date -u +%Y%m%dT%H%M%SZ)"
 
 log "deploying $REF at $SHORT (image $NEW_IMAGE)"
 
-if [ "$DO_PULL" = "1" ]; then
-	# --force: the checkout is a deploy target, not a working tree; local edits are
-	# never expected and would otherwise wedge the next deploy.
-	git -C "$REPO_DIR" checkout --force --detach "$SHA" || die "git checkout failed"
-	# Re-exec the just-checked-out script so a fix to this file ships itself. `exec`
-	# keeps the pid, so the lock stays ours.
-	if [ "${DEPLOY_REEXEC:-0}" != "1" ]; then
-		REEXEC_ARGS=(--no-pull --ref "$SHA")
-		[ "$AUTO_ROLLBACK" = "1" ] || REEXEC_ARGS+=(--no-rollback)
-		DEPLOY_REEXEC=1 exec "$SELF" "${REEXEC_ARGS[@]}"
-	fi
+# Always check out the requested commit. --no-pull skips the network fetch, not
+# the checkout: autodeploy.sh passes --no-pull because it has just fetched, and
+# when the checkout lived inside the DO_PULL branch that flag made every deploy
+# build whatever the working tree happened to hold while recording the new SHA
+# as deployed — the site then reported "up to date" and never shipped again.
+git -C "$REPO_DIR" checkout --force --detach "$SHA" || die "git checkout failed"
+
+# The build must compile the commit we resolved, not a tree that drifted.
+BUILT_SHA=$(git -C "$REPO_DIR" rev-parse HEAD)
+[ "$BUILT_SHA" = "$SHA" ] || die "checkout is at $BUILT_SHA, expected $SHA"
+
+# Re-exec the just-checked-out script so a fix to this file ships itself. `exec`
+# keeps the pid, so the lock stays ours.
+if [ "${DEPLOY_REEXEC:-0}" != "1" ]; then
+	REEXEC_ARGS=(--no-pull --ref "$SHA")
+	[ "$AUTO_ROLLBACK" = "1" ] || REEXEC_ARGS+=(--no-rollback)
+	DEPLOY_REEXEC=1 exec "$SELF" "${REEXEC_ARGS[@]}"
 fi
 
 # Build first, swap second: a failed build must leave the running site untouched.
 log "building image"
-ACS_WEB_IMAGE="$NEW_IMAGE" compose build web || die "docker compose build failed"
+ACS_WEB_IMAGE="$NEW_IMAGE" ACS_BUILD_SHA="$SHA" compose build web || die "docker compose build failed"
 
 log "swapping container"
 ACS_WEB_IMAGE="$NEW_IMAGE" compose up -d --no-deps web || die "docker compose up failed"

@@ -36,6 +36,12 @@ RUN pnpm build
 # ------------------------------------------------------------------ runtime
 FROM caddy:2-alpine AS runtime
 
+# The commit this image was built from. deploy.sh reads it back out of the
+# running container and refuses to record a deploy whose tree did not match the
+# SHA it resolved.
+ARG ACS_BUILD_SHA=unknown
+LABEL acs.build.sha="${ACS_BUILD_SHA}"
+
 COPY --from=build /app/dist /srv
 COPY deploy/gravebuster/Caddyfile /etc/caddy/Caddyfile
 
