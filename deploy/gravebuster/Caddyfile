@@ -9,6 +9,15 @@
 		respond "ok" 200
 	}
 
+	# Hashed build output. A miss here must be a real 404: the SPA fallback below
+	# answers 200 with index.html, and an edge cache that stores that HTML under an
+	# /assets/ URL serves a browser a "module" whose body is HTML — a blank page
+	# that survives every redeploy until the TTL expires.
+	handle /assets/* {
+		header Cache-Control "public, max-age=31536000, immutable"
+		file_server
+	}
+
 	handle {
 		try_files {path} /index.html
 		file_server
